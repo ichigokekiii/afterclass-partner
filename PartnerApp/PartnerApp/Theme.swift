@@ -36,9 +36,7 @@ extension Color {
 
 extension View {
     func partnerScreen() -> some View {
-        self
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(Theme.Palette.white.ignoresSafeArea())
+        self.background(Theme.Palette.white.ignoresSafeArea())
     }
 
     func partnerTitle() -> some View {
@@ -89,35 +87,6 @@ struct PartnerCard<Content: View>: View {
                     .stroke(Theme.Palette.line, lineWidth: 1)
             }
             .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
-    }
-}
-
-struct AfterClassLogo: View {
-    var height: CGFloat = 88
-
-    var body: some View {
-        Image("Logo")
-            .resizable()
-            .scaledToFit()
-            .frame(height: height)
-            .padding(Theme.Spacing.sm)
-            .background(Theme.Palette.white)
-            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .stroke(Theme.Palette.line, lineWidth: 1)
-            }
-            .shadow(color: Color.black.opacity(0.06), radius: 10, x: 0, y: 4)
-            .accessibilityLabel("After Class")
-    }
-}
-
-struct ACMark: View {
-    var side: CGFloat = 56
-
-    var body: some View {
-        AfterClassLogo(height: side * 0.95)
-            .frame(width: side, height: side)
     }
 }
 
@@ -320,35 +289,53 @@ struct MockPhotoTile: View {
     var height: CGFloat = 156
 
     var body: some View {
-        ZStack(alignment: .bottomLeading) {
-            Image(MockMedia.photoAsset(for: label))
-                .resizable()
-                .scaledToFill()
-            .frame(maxWidth: .infinity)
+        Color.clear
+            .frame(minWidth: 0, maxWidth: .infinity)
             .frame(height: height)
-            .clipped()
+            .overlay {
+                GeometryReader { geo in
+                    ZStack(alignment: .bottomLeading) {
+                        photo
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .clipped()
 
-            LinearGradient(
-                colors: [Color.black.opacity(0.0), Color.black.opacity(0.65)],
-                startPoint: .center,
-                endPoint: .bottom
-            )
-            .frame(height: height)
+                        LinearGradient(
+                            colors: [Color.black.opacity(0.0), Color.black.opacity(0.65)],
+                            startPoint: .center,
+                            endPoint: .bottom
+                        )
 
-            Text(label)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Theme.Palette.white)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
+                        Text(label)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Theme.Palette.white)
+                            .lineLimit(2)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                    }
+                    .frame(width: geo.size.width, height: geo.size.height, alignment: .bottomLeading)
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Theme.Palette.line, lineWidth: 1)
+            }
+            .accessibilityElement(children: .contain)
+    }
+
+    @ViewBuilder
+    private var photo: some View {
+        AsyncImage(url: MockMedia.photoURL(for: label)) { phase in
+            if case .success(let image) = phase {
+                image
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                Image(MockMedia.photoAsset(for: label))
+                    .resizable()
+                    .scaledToFill()
+            }
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: height)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Theme.Palette.line, lineWidth: 1)
-        }
-        .accessibilityElement(children: .contain)
     }
 }
 

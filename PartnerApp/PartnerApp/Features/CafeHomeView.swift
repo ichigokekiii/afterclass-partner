@@ -6,36 +6,15 @@ struct CafeHomeView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-                    PartnerCard {
-                        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
-                            MockPhotoTile(label: store.cafe.gallery.first?.caption ?? "Exterior", height: 156)
-                            Text("How students see you")
-                                .partnerSubtext()
-                            labeledField("Name", text: Binding(
-                                get: { store.cafe.name },
-                                set: { store.setName($0) }
-                            ))
-                            labeledField("Address", text: Binding(
-                                get: { store.cafe.address },
-                                set: { store.setAddress($0) }
-                            ))
-                            VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
-                                Text("Description")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(Theme.Palette.ink)
-                                TextField("What should students know?", text: Binding(
-                                    get: { store.cafe.description },
-                                    set: { store.setDescription($0) }
-                                ), axis: .vertical)
-                                .partnerInputField()
-                            }
-                        }
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: Theme.Spacing.md) {
+                        profileCard
+                        sectionMenu(proxy: proxy)
                     }
-                    sectionMenu
+                    .padding(Theme.Spacing.gutter)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(Theme.Spacing.gutter)
             }
             .partnerScreen()
             .navigationTitle("Café")
@@ -43,43 +22,103 @@ struct CafeHomeView: View {
         }
     }
 
-    private var sectionMenu: some View {
-        Menu {
-            sectionButton("Opening hours", route: .hours)
-            sectionButton("Busy times", route: .busy)
-            sectionButton("Photos", route: .gallery)
-            sectionButton("Menu", route: .menu)
-            sectionButton("Preview in the student app", route: .preview)
-            sectionButton("Tier and billing", route: .billing, identifier: "tier-and-billing")
-        } label: {
-            PartnerCard {
-                HStack(spacing: Theme.Spacing.sm) {
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.burgundy)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Choose a section")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(Theme.Palette.ink)
-                        Text("Hours, photos, menu, preview, billing")
-                            .partnerSubtext()
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
+    private var profileCard: some View {
+        PartnerCard {
+            VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+                MockPhotoTile(label: store.cafe.gallery.first?.caption ?? "Exterior", height: 156)
+                Text("How students see you")
+                    .partnerSubtext()
+                labeledField("Name", text: Binding(
+                    get: { store.cafe.name },
+                    set: { store.setName($0) }
+                ))
+                labeledField("Address", text: Binding(
+                    get: { store.cafe.address },
+                    set: { store.setAddress($0) }
+                ))
+                VStack(alignment: .leading, spacing: Theme.Spacing.xs) {
+                    Text("Description")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.burgundy)
+                        .foregroundStyle(Theme.Palette.ink)
+                    TextField("What should students know?", text: Binding(
+                        get: { store.cafe.description },
+                        set: { store.setDescription($0) }
+                    ), axis: .vertical)
+                    .partnerInputField()
                 }
-                .frame(minHeight: Theme.Spacing.control)
             }
         }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier("cafe-section-menu")
     }
 
-    private func sectionButton(_ title: String, route: AppRoute, identifier: String? = nil) -> some View {
-        Button(title) {
-            path.append(route)
+    /// Rows stay on screen. The walk still taps this heading, which brings billing up into reach.
+    private func sectionMenu(proxy: ScrollViewProxy) -> some View {
+        VStack(alignment: .leading, spacing: Theme.Spacing.sm) {
+            Button {
+                withAnimation {
+                    proxy.scrollTo("cafe-sections", anchor: .top)
+                }
+            } label: {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Choose a section")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(Theme.Palette.ink)
+                    Text("Hours, photos, menu, preview, billing")
+                        .partnerSubtext()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(minHeight: 44)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("cafe-section-menu")
+
+            PartnerCard {
+                VStack(spacing: 0) {
+                    sectionRow("Opening hours", systemImage: "clock", route: .hours)
+                    rowDivider
+                    sectionRow("Busy times", systemImage: "calendar", route: .busy)
+                    rowDivider
+                    sectionRow("Photos", systemImage: "photo", route: .gallery)
+                    rowDivider
+                    sectionRow("Menu", systemImage: "menucard", route: .menu)
+                    rowDivider
+                    sectionRow("Preview in the student app", systemImage: "eye", route: .preview)
+                    rowDivider
+                    sectionRow("Tier and billing", systemImage: "creditcard", route: .billing, identifier: "tier-and-billing")
+                }
+            }
+            .id("cafe-sections")
         }
+    }
+
+    private var rowDivider: some View {
+        Rectangle()
+            .fill(Theme.Palette.line)
+            .frame(height: 1)
+    }
+
+    private func sectionRow(_ title: String, systemImage: String, route: AppRoute, identifier: String? = nil) -> some View {
+        Button {
+            path.append(route)
+        } label: {
+            HStack(spacing: Theme.Spacing.sm) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.burgundy)
+                    .frame(width: 28, alignment: .center)
+                Text(title)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.ink)
+                    .multilineTextAlignment(.leading)
+                Spacer(minLength: Theme.Spacing.xs)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Theme.Palette.burgundy)
+            }
+            .frame(minHeight: Theme.Spacing.control)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
         .accessibilityIdentifier(identifier ?? title)
     }
 

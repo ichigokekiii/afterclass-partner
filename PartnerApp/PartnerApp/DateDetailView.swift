@@ -23,11 +23,13 @@ struct DateDetailView: View {
             VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                 PartnerCard {
                     VStack(alignment: .leading, spacing: 10) {
-                        HStack {
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Text("\(booking.students.first.firstName) and \(booking.students.second.firstName)")
                                 .partnerHeader()
-                            Spacer()
+                                .fixedSize(horizontal: false, vertical: true)
+                            Spacer(minLength: 8)
                             stateChip(booking.state)
+                                .fixedSize(horizontal: true, vertical: false)
                         }
                         Text(DateWindow.label(start: booking.windowStart, end: booking.windowEnd))
                             .font(.system(size: 16, weight: .semibold))
@@ -45,6 +47,7 @@ struct DateDetailView: View {
                 photos(booking)
             }
             .padding(Theme.Spacing.gutter)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .safeAreaInset(edge: .bottom) {
             bottomBar(booking)
@@ -123,6 +126,7 @@ struct DateDetailView: View {
                         HStack(spacing: 12) {
                             ForEach(visible.imageLabels, id: \.self) { label in
                                 photoTile(label, height: 140)
+                                    .frame(minWidth: 0, maxWidth: .infinity)
                             }
                         }
                     } else {
