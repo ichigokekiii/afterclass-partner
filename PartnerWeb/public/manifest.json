@@ -1,0 +1,10 @@
+{
+  "name": "After Class Partner",
+  "short_name": "AC Partner",
+  "description": "Counter companion for After Class partner cafés.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#4A1525",
+  "orientation": "portrait"
+}

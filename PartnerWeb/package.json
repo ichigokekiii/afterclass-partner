@@ -1,0 +1,28 @@
+{
+  "name": "partner-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "TZ=Asia/Manila next dev",
+    "build": "TZ=Asia/Manila next build",
+    "start": "TZ=Asia/Manila next start",
+    "test": "TZ=Asia/Manila node --import tsx --test src/domain/rules.test.ts",
+    "test:e2e": "TZ=Asia/Manila playwright test"
+  },
+  "dependencies": {
+    "next": "15.2.4",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^22.13.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

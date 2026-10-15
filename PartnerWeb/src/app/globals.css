@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --partner-cream: #FEF9E6;
+  --partner-white: #FFFFFF;
+  --partner-surface: #F8F7F4;
+  --partner-burgundy: #4A1525;
+  --partner-pink: #F39394;
+  --partner-ink: #2E2E2E;
+  --partner-green: #5F8651;
+  --partner-gray: #757575;
+  --partner-line: #EAE6DF;
+  color-scheme: light;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--partner-white);
+  color: var(--partner-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
