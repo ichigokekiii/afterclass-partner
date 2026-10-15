@@ -37,34 +37,29 @@ struct TodayView: View {
     }
 
     private var brandBar: some View {
-        HStack(spacing: 12) {
-            ACMark(side: 44)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(store.cafe.name)
-                    .font(.system(size: 17, weight: .bold))
-                    .foregroundStyle(Theme.Palette.ink)
-                Text(store.session.map { "Signed in as \($0.name)" } ?? "")
+        VStack(alignment: .leading, spacing: 4) {
+            Text(store.cafe.name)
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(Theme.Palette.ink)
+            if let session = store.session {
+                Text("Signed in as \(session.name)")
                     .partnerSubtext()
             }
-            Spacer()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var summary: some View {
         let open = store.openToday()
         return VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("ACTIVE SCHEDULE")
-                        .font(.system(size: 12, weight: .bold))
-                        .tracking(0.8)
-                        .foregroundStyle(Theme.Palette.white.opacity(0.75))
-                    Text("\(open.count) still open")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundStyle(Theme.Palette.white)
-                }
-                Spacer()
-                ACMark(side: 40)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("ACTIVE SCHEDULE")
+                    .font(.system(size: 12, weight: .bold))
+                    .tracking(0.8)
+                    .foregroundStyle(Theme.Palette.white.opacity(0.75))
+                Text("\(open.count) still open")
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundStyle(Theme.Palette.white)
             }
             if let next = store.nextWindow() {
                 Text("Next, \(next.windowStart.formatted(date: .omitted, time: .shortened))")

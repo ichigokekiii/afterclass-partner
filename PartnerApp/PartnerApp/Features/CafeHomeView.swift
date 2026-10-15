@@ -2,9 +2,10 @@ import SwiftUI
 
 struct CafeHomeView: View {
     @EnvironmentObject private var store: PartnerStore
+    @State private var path = NavigationPath()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                     PartnerCard {
@@ -32,14 +33,7 @@ struct CafeHomeView: View {
                             }
                         }
                     }
-                    VStack(spacing: 12) {
-                        link("Opening hours", icon: "clock", route: .hours)
-                        link("Busy times", icon: "calendar.badge.exclamationmark", route: .busy)
-                        link("Photos", icon: "photo.on.rectangle", route: .gallery)
-                        link("Menu", icon: "cup.and.saucer", route: .menu)
-                        link("Preview in the student app", icon: "iphone", route: .preview)
-                        link("Tier and billing", icon: "creditcard", route: .billing, identifier: "tier-and-billing")
-                    }
+                    sectionMenu
                 }
                 .padding(Theme.Spacing.gutter)
             }
@@ -47,6 +41,46 @@ struct CafeHomeView: View {
             .navigationTitle("Café")
             .appDestinations()
         }
+    }
+
+    private var sectionMenu: some View {
+        Menu {
+            sectionButton("Opening hours", route: .hours)
+            sectionButton("Busy times", route: .busy)
+            sectionButton("Photos", route: .gallery)
+            sectionButton("Menu", route: .menu)
+            sectionButton("Preview in the student app", route: .preview)
+            sectionButton("Tier and billing", route: .billing, identifier: "tier-and-billing")
+        } label: {
+            PartnerCard {
+                HStack(spacing: Theme.Spacing.sm) {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.burgundy)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Choose a section")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(Theme.Palette.ink)
+                        Text("Hours, photos, menu, preview, billing")
+                            .partnerSubtext()
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Theme.Palette.burgundy)
+                }
+                .frame(minHeight: Theme.Spacing.control)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("cafe-section-menu")
+    }
+
+    private func sectionButton(_ title: String, route: AppRoute, identifier: String? = nil) -> some View {
+        Button(title) {
+            path.append(route)
+        }
+        .accessibilityIdentifier(identifier ?? title)
     }
 
     private func labeledField(_ title: String, text: Binding<String>) -> some View {
@@ -59,31 +93,6 @@ struct CafeHomeView: View {
         }
     }
 
-    private func link(_ title: String, icon: String, route: AppRoute, identifier: String? = nil) -> some View {
-        NavigationLink(value: route) {
-            PartnerCard {
-                HStack(spacing: 12) {
-                    Circle()
-                        .fill(Theme.Palette.burgundy.opacity(0.1))
-                        .frame(width: 40, height: 40)
-                        .overlay {
-                            Image(systemName: icon)
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(Theme.Palette.burgundy)
-                        }
-                    Text(title)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.ink)
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Theme.Palette.burgundy)
-                }
-            }
-        }
-        .buttonStyle(.plain)
-        .accessibilityIdentifier(identifier ?? title)
-    }
 }
 
 struct HoursEditorView: View {

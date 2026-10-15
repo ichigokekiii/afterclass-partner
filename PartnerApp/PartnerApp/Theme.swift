@@ -92,21 +92,32 @@ struct PartnerCard<Content: View>: View {
     }
 }
 
+struct AfterClassLogo: View {
+    var height: CGFloat = 88
+
+    var body: some View {
+        Image("Logo")
+            .resizable()
+            .scaledToFit()
+            .frame(height: height)
+            .padding(Theme.Spacing.sm)
+            .background(Theme.Palette.white)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(Theme.Palette.line, lineWidth: 1)
+            }
+            .shadow(color: Color.black.opacity(0.06), radius: 10, x: 0, y: 4)
+            .accessibilityLabel("After Class")
+    }
+}
+
 struct ACMark: View {
     var side: CGFloat = 56
 
     var body: some View {
-        RoundedRectangle(cornerRadius: side * 0.26, style: .continuous)
-            .fill(Theme.Palette.burgundy)
+        AfterClassLogo(height: side * 0.95)
             .frame(width: side, height: side)
-            .overlay {
-                Image("Logo")
-                    .resizable()
-                    .scaledToFit()
-                    .padding(side * 0.16)
-            }
-            .shadow(color: Theme.Palette.burgundy.opacity(0.18), radius: 8, x: 0, y: 4)
-            .accessibilityLabel("After Class")
     }
 }
 
@@ -290,18 +301,10 @@ struct StudentAvatar: View {
     var side: CGFloat = 48
 
     var body: some View {
-        AsyncImage(url: MockMedia.avatarURL(for: name)) { phase in
-            if case .success(let image) = phase {
-                image
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                Image(MockMedia.avatarAsset(for: name))
-                    .resizable()
-                    .scaledToFill()
-            }
-        }
-        .frame(width: side, height: side)
+        Image(MockMedia.avatarAsset(for: name))
+            .resizable()
+            .scaledToFill()
+            .frame(width: side, height: side)
         .clipShape(Circle())
         .overlay {
             Circle()
@@ -318,17 +321,9 @@ struct MockPhotoTile: View {
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            AsyncImage(url: MockMedia.photoURL(for: label)) { phase in
-                if case .success(let image) = phase {
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    Image(MockMedia.photoAsset(for: label))
-                        .resizable()
-                        .scaledToFill()
-                }
-            }
+            Image(MockMedia.photoAsset(for: label))
+                .resizable()
+                .scaledToFill()
             .frame(maxWidth: .infinity)
             .frame(height: height)
             .clipped()

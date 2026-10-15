@@ -40,8 +40,10 @@ final class DemoWalkTests: XCTestCase {
         app.navigationBars.buttons["Alerts"].tap()
 
         app.tabBars.buttons["Café"].tap()
-        XCTAssertTrue(app.staticTexts["Tier and billing"].waitForExistence(timeout: 4))
-        app.descendants(matching: .any)["tier-and-billing"].tap()
+        XCTAssertTrue(app.buttons["cafe-section-menu"].waitForExistence(timeout: 4))
+        app.buttons["cafe-section-menu"].tap()
+        XCTAssertTrue(app.buttons["tier-and-billing"].waitForExistence(timeout: 4))
+        app.buttons["tier-and-billing"].tap()
         XCTAssertTrue(app.staticTexts["Senior"].waitForExistence(timeout: 4))
         XCTAssertTrue(app.staticTexts["12 of 500 customers"].waitForExistence(timeout: 4))
         XCTAssertTrue(app.staticTexts["Free until 500 customers. Then the monthly fee starts."].exists)
